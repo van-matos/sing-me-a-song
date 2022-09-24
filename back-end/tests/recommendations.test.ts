@@ -9,7 +9,7 @@ import songFactory from "./factories/songFactory";
 beforeEach(async () => {
     await prisma.$executeRaw`TRUNCATE TABLE "recommendations" RESTART IDENTITY`;
 });
-/*
+
 describe("POST /recommendations", () => {
     it("Should return status code 201 given a valid body", async () => {
         const song = await songFactory();
@@ -114,7 +114,7 @@ describe("POST /recommendations/:id/downvote", () => {
 })
 
 describe("GET /recommendations", () => {
-    it("Should return recommendations list with 10 items", async () => {
+    it("Should return status code 200 and recommendations list with 10 items", async () => {
         await recommendationListFactory();
 
         const response = await supertest(app).get(`/recommendations`);
@@ -141,7 +141,7 @@ describe("GET /recommendations/:id", () => {
         expect(response.status).toBe(404);
     })
 })
-*/
+
 describe("GET /recommendations/random", () => {
     it("Should return status code 200 and recommendation given populated recommendations table", async () => {
         await recommendationListFactory();
@@ -156,6 +156,28 @@ describe("GET /recommendations/random", () => {
         const response = await supertest(app).get("/recommendations/random");
 
         expect(response.status).toBe(404);
+    })
+})
+
+describe("GET /recommendations/top/:amount", () => {
+    it("Should return status code 200 and recommendation list given valid amount", async () => {
+        await recommendationListFactory();
+        const amount = Math.floor(Math.random() * 10) + 1;
+
+        const response = await supertest(app).get(`/recommendations/top/${amount}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body.length).toBeLessThanOrEqual(amount);
+    })
+
+    it("Should return status code 500 given invalid amount", async () => {
+        await recommendationListFactory();
+        const amount = "string";
+
+        const response = await supertest(app).get(`/recommendations/top/${amount}`);
+
+        expect(response.status).toBe(500);
     })
 })
 
