@@ -9,7 +9,7 @@ import songFactory from "./factories/songFactory";
 beforeEach(async () => {
     await prisma.$executeRaw`TRUNCATE TABLE "recommendations" RESTART IDENTITY`;
 });
-
+/*
 describe("POST /recommendations", () => {
     it("Should return status code 201 given a valid body", async () => {
         const song = await songFactory();
@@ -133,6 +133,29 @@ describe("GET /recommendations/:id", () => {
         
         expect(response.status).toBe(200);
         expect(response.body).toBeInstanceOf(Object);
+    })
+
+    it("Should return status code 404 given invalid id", async () => {
+        const response = await supertest(app).get(`/recommendations/${0}`).send();
+        
+        expect(response.status).toBe(404);
+    })
+})
+*/
+describe("GET /recommendations/random", () => {
+    it("Should return status code 200 and recommendation given populated recommendations table", async () => {
+        await recommendationListFactory();
+
+        const response = await supertest(app).get("/recommendations/random");
+
+        expect(response.status).toBe(200);
+        expect(response.body).toBeInstanceOf(Object);
+    })
+
+    it("Should return status code 404 given empty recommendations table", async () => {
+        const response = await supertest(app).get("/recommendations/random");
+
+        expect(response.status).toBe(404);
     })
 })
 
