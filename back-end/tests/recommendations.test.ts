@@ -14,12 +14,22 @@ describe("POST /recommendations", () => {
 
         const response = await supertest(app).post(`/recommendations`).send(song);
 
-        const createdMusic = await prisma.recommendation.findFirst({
+        const findSong = await prisma.recommendation.findFirst({
             where: { name: song.name },
           });
 
         expect(response.status).toBe(201);
-        expect(createdMusic).toBeInstanceOf(Object);
+        expect(findSong).toBeInstanceOf(Object);
+    })
+
+    it("Should return status code 409 given a repeated recommendation", async () => {
+        const song = await songFactory();
+
+        await supertest(app).post(`/recommendations`).send(song);
+        
+        const response = await supertest(app).post(`/recommendations`).send(song);
+
+        expect(response.status).toBe(409);
     })
 
     it("Should return status code 422 given a body with no name", async () => {
