@@ -3,6 +3,7 @@ import supertest from "supertest";
 import app from "../src/app";
 import { prisma } from "../src/database";
 import recommendationFactory from "./factories/recommendationFactory";
+import recommendationListFactory from "./factories/recommendationListFactory";
 import songFactory from "./factories/songFactory";
 
 beforeEach(async () => {
@@ -114,18 +115,24 @@ describe("POST /recommendations/:id/downvote", () => {
 
 describe("GET /recommendations", () => {
     it("Should return recommendations list with 10 items", async () => {
-        let counter = 0;
-        
-        while (counter < 15) {
-            await recommendationFactory();
-            counter++;
-        }
+        await recommendationListFactory();
 
         const response = await supertest(app).get(`/recommendations`);
         
         expect(response.status).toBe(200);
         expect(response.body).toBeInstanceOf(Object);
         expect(response.body.length).toBeLessThan(11);
+    })
+})
+
+describe("GET /recommendations/:id", () => {
+    it("Should return status code 200 and recommendation given valid id", async () => {
+        const song = await recommendationFactory();
+
+        const response = await supertest(app).get(`/recommendations/${song.id}`).send();
+        
+        expect(response.status).toBe(200);
+        expect(response.body).toBeInstanceOf(Object);
     })
 })
 
