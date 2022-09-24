@@ -76,6 +76,42 @@ describe("POST /recommendations/:id/upvote", () => {
     })
 })
 
+describe("POST /recommendations/:id/downvote", () => {
+    it("Should return status code 200 given downvote on existent recommendation", async () => {
+        const recommendation = await recommendationFactory();
+
+        const response = await supertest(app).post(`/recommendations/${recommendation.id}/downvote`).send();
+
+        expect(response.status).toBe(200);
+    })
+
+    it("Should return status code 200 given downvote on low-scoring recommendation", async () => {
+        const recommendation = await recommendationFactory();
+
+        await prisma.recommendation.update({
+            where: { name: recommendation.name},
+            data: {
+                score: -5
+            }
+        });
+
+        const response = await supertest(app).post(`/recommendations/${recommendation.id}/downvote`).send();
+
+        const findRecommendation = await prisma.recommendation.findFirst({
+            where: { name: recommendation.name }
+        });
+
+        expect(response.status).toBe(200);
+        expect(findRecommendation).toBeNull();
+    })
+
+    it("Should return status code 404 given downvote on inexistent recommendation", async () => {
+        const response = await supertest(app).post(`/recommendations/${0}/downvote`).send(); 
+
+        expect(response.status).toBe(404)
+    })
+})
+
 afterAll(async () => {
     await prisma.$disconnect();
 });
