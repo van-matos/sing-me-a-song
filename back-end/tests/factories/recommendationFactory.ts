@@ -1,9 +1,16 @@
-import { faker } from "@faker-js/faker";
+import { prisma } from "../../src/database";
+import songFactory from "./songFactory";
 
-export default async function songFactory() {
-  const fakerString = faker.random.alpha(11);
-  return {
-    name: faker.music.songName(),
-    youtubeLink: `https://youtu.be/${fakerString}`,
-  };
+export default async function recommendationFactory() {
+    const song = await songFactory();
+
+    await prisma.recommendation.create({
+        data: {
+            ...song
+        }
+    });
+
+    return await prisma.recommendation.findFirst({
+        where: { name: song.name }
+    });
 }
