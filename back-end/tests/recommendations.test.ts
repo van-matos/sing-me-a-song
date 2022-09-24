@@ -112,6 +112,23 @@ describe("POST /recommendations/:id/downvote", () => {
     })
 })
 
+describe("GET /recommendations", () => {
+    it("Should return recommendations list with 10 items", async () => {
+        let counter = 0;
+        
+        while (counter < 15) {
+            await recommendationFactory();
+            counter++;
+        }
+
+        const response = await supertest(app).get(`/recommendations`);
+        
+        expect(response.status).toBe(200);
+        expect(response.body).toBeInstanceOf(Object);
+        expect(response.body.length).toBeLessThan(11);
+    })
+})
+
 afterAll(async () => {
     await prisma.$disconnect();
 });
