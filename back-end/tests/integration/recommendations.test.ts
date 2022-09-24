@@ -1,10 +1,8 @@
 import supertest from "supertest";
 
-import app from "../src/app";
-import { prisma } from "../src/database";
-import recommendationFactory from "./factories/recommendationFactory";
-import recommendationListFactory from "./factories/recommendationListFactory";
-import songFactory from "./factories/songFactory";
+import app from "../../src/app";
+import { prisma } from "../../src/database";
+import {songFactory, recommendationFactory, recommendationListFactory} from "../factories/recommendationFactory";
 
 beforeEach(async () => {
     await prisma.$executeRaw`TRUNCATE TABLE "recommendations" RESTART IDENTITY`;
