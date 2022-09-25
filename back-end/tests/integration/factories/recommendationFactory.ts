@@ -3,11 +3,11 @@ import { faker } from "@faker-js/faker";
 import { prisma } from "../../../src/database";
 
 async function songFactory() {
-  const fakerString = faker.random.alpha(11);
+  const string = faker.random.alpha(11);
 
   return {
     name: faker.music.songName(),
-    youtubeLink: `https://youtu.be/${fakerString}`,
+    youtubeLink: `https://youtu.be/${string}`,
   };
 }
 
