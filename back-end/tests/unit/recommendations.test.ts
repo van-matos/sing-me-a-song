@@ -49,7 +49,7 @@ describe("POST /recommendations", () => {
 describe("POST /recommendations/:id/upvote", () => {
   it("Should add upvote given valid id", async () => {
     const song = await songFactory();
-    const id = faker.datatype.number({ min: 0, precision: 1 });
+    const id = faker.datatype.number();
 
     jest
       .spyOn(recommendationRepository, "find")
@@ -67,7 +67,7 @@ describe("POST /recommendations/:id/upvote", () => {
   });
 
   it("Should not add upvote given invalid id", async () => {
-    const id = faker.datatype.number({ min: 0, precision: 1 });
+    const id = faker.datatype.number();
 
     jest
       .spyOn(recommendationRepository, "find")
@@ -83,8 +83,8 @@ describe("POST /recommendations/:id/upvote", () => {
 describe("POST /recommendations/:id/downvote", () => {
   it("Should add downvote given valid id", async () => {
     const song = await songFactory();
-    const id = faker.datatype.number({ min: 0, precision: 1 });
-    const score = faker.datatype.number({ min: -5, precision: 1 });
+    const id = faker.datatype.number();
+    const score = faker.datatype.number({ min: -5 });
 
     jest
       .spyOn(recommendationRepository, "find")
@@ -105,7 +105,7 @@ describe("POST /recommendations/:id/downvote", () => {
 
   it("Should add downvote and delete recommendation given valid id and score less than -5", async () => {
     const song = await songFactory();
-    const id = faker.datatype.number({ min: 0, precision: 1 });
+    const id = faker.datatype.number();
     const score = -6;
 
     jest
@@ -130,7 +130,7 @@ describe("POST /recommendations/:id/downvote", () => {
   });
 
   it("Should not add downvote given invalid id", async () => {
-    const id = faker.datatype.number({ min: 0, precision: 1 });
+    const id = faker.datatype.number();
 
     jest
       .spyOn(recommendationRepository, "find")
@@ -156,5 +156,22 @@ describe("GET /recommendations", () => {
     await recommendationService.get();
 
     expect(recommendationRepository.findAll).toBeCalled();
+  });
+
+  describe("GET /recommendations/top/:amount", () => {
+    it("Should return top recommendations given valid amount", async () => {
+      const list = recommendationListFactoryUnit();
+      const amount = faker.datatype.number({ max: 10 });
+
+      jest
+        .spyOn(recommendationRepository, "getAmountByScore")
+        .mockImplementationOnce((): any => {
+          return list;
+        });
+
+      await recommendationService.getTop(amount);
+
+      expect(recommendationRepository.getAmountByScore).toBeCalledWith(amount);
+    });
   });
 });
