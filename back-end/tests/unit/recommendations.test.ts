@@ -2,7 +2,10 @@ import { faker } from "@faker-js/faker";
 
 import { recommendationService } from "../../src/services/recommendationsService";
 import { recommendationRepository } from "../../src/repositories/recommendationRepository";
-import { songFactory } from "../factories/recommendationFactory";
+import {
+  songFactory,
+  recommendationListFactoryUnit,
+} from "../factories/recommendationFactory";
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -137,5 +140,21 @@ describe("POST /recommendations/:id/downvote", () => {
 
     expect(recommendationRepository.find).toBeCalled();
     expect(response).rejects.toEqual({ message: "", type: "not_found" });
+  });
+});
+
+describe("GET /recommendations", () => {
+  it("Should return most recent recommendations", async () => {
+    const list = recommendationListFactoryUnit();
+
+    jest
+      .spyOn(recommendationRepository, "findAll")
+      .mockImplementationOnce((): any => {
+        return list;
+      });
+
+    await recommendationService.get();
+
+    expect(recommendationRepository.findAll).toBeCalled();
   });
 });

@@ -37,4 +37,29 @@ async function recommendationListFactory() {
   return;
 }
 
-export { songFactory, recommendationFactory, recommendationListFactory };
+async function recommendationListFactoryUnit() {
+  let counter = 0;
+  let list = [];
+
+  const song = await songFactory();
+
+  while (counter < 15) {
+    const recommendation = {
+      ...song,
+      id: counter + 1,
+      score: faker.datatype.number({ min: -5, max: 100 }),
+    };
+
+    list.push(recommendation);
+    counter++;
+  }
+
+  return;
+}
+
+export {
+  songFactory,
+  recommendationFactory,
+  recommendationListFactory,
+  recommendationListFactoryUnit,
+};
