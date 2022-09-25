@@ -1,11 +1,12 @@
 import { faker } from "@faker-js/faker";
 
 import { recommendationService } from "../../src/services/recommendationsService";
-import { recommendationRepository } from "../../src/repositories/recommendationRepository";
 import {
   songFactory,
-  recommendationListFactoryUnit,
-} from "../factories/recommendationFactory";
+  recommendationFactory,
+  recommendationListFactory,
+} from "./factories/recommendationFactory";
+import { recommendationRepository } from "../../src/repositories/recommendationRepository";
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -145,7 +146,7 @@ describe("POST /recommendations/:id/downvote", () => {
 
 describe("GET /recommendations", () => {
   it("Should return most recent recommendations", async () => {
-    const list = recommendationListFactoryUnit();
+    const list = recommendationListFactory();
 
     jest
       .spyOn(recommendationRepository, "findAll")
@@ -157,21 +158,72 @@ describe("GET /recommendations", () => {
 
     expect(recommendationRepository.findAll).toBeCalled();
   });
+});
 
-  describe("GET /recommendations/top/:amount", () => {
-    it("Should return top recommendations given valid amount", async () => {
-      const list = recommendationListFactoryUnit();
-      const amount = faker.datatype.number({ max: 10 });
+describe("GET /recommendations/top/:amount", () => {
+  it("Should return top recommendations given valid amount", async () => {
+    const list = await recommendationListFactory();
+    const amount = faker.datatype.number({ max: 10 });
 
-      jest
-        .spyOn(recommendationRepository, "getAmountByScore")
-        .mockImplementationOnce((): any => {
-          return list;
-        });
+    jest
+      .spyOn(recommendationRepository, "getAmountByScore")
+      .mockImplementationOnce((): any => {
+        return list;
+      });
 
-      await recommendationService.getTop(amount);
+    await recommendationService.getTop(amount);
 
-      expect(recommendationRepository.getAmountByScore).toBeCalledWith(amount);
-    });
+    expect(recommendationRepository.getAmountByScore).toBeCalledWith(amount);
+  });
+});
+
+describe("GET /recommendations/random", () => {
+  it("Should return recommendation with score greater than 10", async () => {
+    const recommendation = await recommendationFactory();
+    console.log(recommendation);
+
+    jest.spyOn(Math, "random").mockImplementationOnce(() => 0.6);
+    jest
+      .spyOn(recommendationRepository, "findAll")
+      .mockImplementationOnce((): any => {
+        return [recommendation];
+      });
+
+    const response = recommendationService.getRandom();
+
+    expect(response).toBeInstanceOf(Object);
+    //expect((await response).score).toBeGreaterThan(10);
+    expect(recommendationRepository.findAll).toBeCalled();
+  });
+
+  it("Should return recommendation with score equal to or less than 10", async () => {
+    const recommendation = recommendationFactory();
+    console.log(recommendation);
+
+    jest.spyOn(Math, "random").mockImplementationOnce(() => 0.8);
+    jest
+      .spyOn(recommendationRepository, "findAll")
+      .mockImplementationOnce((): any => {
+        return [recommendation];
+      });
+
+    const response = recommendationService.getRandom();
+
+    expect(response).toBeInstanceOf(Object);
+    //expect((await response).score).toBeLessThanOrEqual(10);
+    expect(recommendationRepository.findAll).toBeCalled();
+  });
+
+  it("Should return error given empty recommendations table", async () => {
+    jest
+      .spyOn(recommendationRepository, "findAll")
+      .mockImplementation((): any => {
+        return [];
+      });
+
+    const response = recommendationService.getRandom();
+
+    expect(recommendationRepository.findAll).toBeCalled();
+    expect(response).rejects.toEqual({ type: "not_found", message: "" });
   });
 });

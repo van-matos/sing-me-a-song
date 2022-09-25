@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 
-import { prisma } from "../../src/database";
+import { prisma } from "../../../src/database";
 
 async function songFactory() {
   const fakerString = faker.random.alpha(11);
@@ -37,29 +37,4 @@ async function recommendationListFactory() {
   return;
 }
 
-async function recommendationListFactoryUnit() {
-  let counter = 0;
-  let list = [];
-
-  const song = await songFactory();
-
-  while (counter < 15) {
-    const recommendation = {
-      ...song,
-      id: counter + 1,
-      score: faker.datatype.number({ min: -5, max: 100 }),
-    };
-
-    list.push(recommendation);
-    counter++;
-  }
-
-  return;
-}
-
-export {
-  songFactory,
-  recommendationFactory,
-  recommendationListFactory,
-  recommendationListFactoryUnit,
-};
+export { songFactory, recommendationFactory, recommendationListFactory };

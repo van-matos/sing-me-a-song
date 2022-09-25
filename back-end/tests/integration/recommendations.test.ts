@@ -6,7 +6,7 @@ import {
   songFactory,
   recommendationFactory,
   recommendationListFactory,
-} from "../factories/recommendationFactory";
+} from "./factories/recommendationFactory";
 
 beforeEach(async () => {
   await prisma.$executeRaw`TRUNCATE TABLE "recommendations" RESTART IDENTITY`;
