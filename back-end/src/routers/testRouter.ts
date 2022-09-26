@@ -3,7 +3,8 @@ import { testController } from "../controllers/testController.js";
 
 const router = Router();
 
-router.post("/reset-database", testController.resetDatabase);
-router.post("/seed/recommendations", testController.seedDatabase);
+router.post("/reset", testController.resetDatabase);
+router.post("/seed/multi", testController.seedDatabase);
+router.post("/seed/single", testController.seedOneDatabase);
 
 export default router;

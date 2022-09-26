@@ -13,7 +13,14 @@ async function seedDatabase(req: Request, res: Response) {
   res.sendStatus(200);
 }
 
+async function seedOneDatabase(req: Request, res: Response) {
+  await testService.seedOne();
+
+  res.sendStatus(200);
+}
+
 export const testController = {
   resetDatabase,
   seedDatabase,
+  seedOneDatabase,
 };
