@@ -37,7 +37,11 @@ export default function CreateNewRecommendation({
         onChange={(e) => setLink(e.target.value)}
         disabled={disabled}
       />
-      <Button onClick={() => handleCreateRecommendation()} disabled={disabled}>
+      <Button
+        data-test-id="submitButton"
+        onClick={() => handleCreateRecommendation()}
+        disabled={disabled}
+      >
         <IoReturnUpForwardOutline size="24px" color="#fff" />
       </Button>
     </Container>
